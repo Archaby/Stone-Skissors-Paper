@@ -18,7 +18,10 @@ app.renderer.backgroundColor = 0xFEFDD3;
 const stage = app.stage;
 
 let scoreForPlayer = 0,
-    scoreForAndroid = 0;
+    scoreForAndroid = 0,
+    arrOfMove = ['stone', 'skissors', 'paper'],
+    moveOfPlayer,
+    moveOfAndroid;
 
 const textureStoneBig = PIXI.Texture.from('public/images/stoneBig.png');
 const textureStoneSmall = PIXI.Texture.from('public/images/stoneSmall.png');
@@ -51,7 +54,7 @@ stoneBigForPlayer.visible = false;
 
 skissorsBigForPlayer.x = 60;
 skissorsBigForPlayer.y = app.screen.height / 2.5;
-//skissorsBigForPlayer.visible = false;
+skissorsBigForPlayer.visible = false;
 
 paperBigForPlayer.x = 60;
 paperBigForPlayer.y = app.screen.height / 2.5;
@@ -59,7 +62,7 @@ paperBigForPlayer.visible = false;
 
 stoneBigForAndroid.x = app.screen.width - stoneBigForAndroid.width - 150;
 stoneBigForAndroid.y = app.screen.height / 2.5;
-//stoneBigForAndroid.visible = false;
+stoneBigForAndroid.visible = false;
 
 skissorsBigForAndroid.x = app.screen.width - skissorsBigForAndroid.width - 150;
 skissorsBigForAndroid.y = app.screen.height / 2.5;
@@ -89,35 +92,36 @@ stoneSmall.on('pointerdown', onClickstoneSmall);
 skissorsSmall.on('pointerdown', onClickSkissorsSmall);
 paperSmall.on('pointerdown', onClickPaperSmall);
 
+const objViewForAndroid = { 'stone' :  stoneBigForAndroid,
+                            'skissors' : skissorsBigForAndroid,
+                            'paper' : paperBigForAndroid
+                          };
+
 function onClickstoneSmall() {
-    console.log('hello');
+    stoneBigForPlayer.visible = true;
+    moveOfPlayer = 'stone';
+    moveOfAndroid = randomMoveOfAndroid();
+    objViewForAndroid[moveOfAndroid].visible = true;
+    checkPriority(moveOfPlayer, moveOfAndroid);
+    //stoneBigForPlayer.visible = false;
 }
 
 function onClickSkissorsSmall() {
-    console.log('hello');
+    skissorsBigForPlayer.visible = true;
+    moveOfPlayer = 'skissors';
+    moveOfAndroid = randomMoveOfAndroid();
+    objViewForAndroid[moveOfAndroid].visible = true;
+    checkPriority(moveOfPlayer, moveOfAndroid);
+    //skissorsBigForPlayer.visible = false;
 }
 
 function onClickPaperSmall() {
-    console.log('hello');
-}
-
-function setup() {
-
-    // id = loader.resources["images/sprite.json"].textures;
-    // stoneBig = new Sprite(id["stoneBig.png"]);
-    // app.stage.addChild(stoneBig);
-
-    // stoneBig = new Sprite(
-    //     resources["images/sprite.json"].Texture["stoneBig.png"]
-    // );
-    // stoneBig.x = 68;
-    // stoneBig.y = 68;
-    // app.stage.addChild(stoneBig);
-
-    // let paper = new Sprite(
-    //     loader.resources["public/images/paperSmall.png"].texture
-    // );
-    //stage.addChild(paper);
+    paperBigForPlayer.visible = true;
+    moveOfPlayer = 'paper';
+    moveOfAndroid = randomMoveOfAndroid();
+    objViewForAndroid[moveOfAndroid].visible = true;
+    checkPriority(moveOfPlayer, moveOfAndroid);
+    //paperBigForPlayer.visible = false;
 }
 
 //add info text
@@ -142,5 +146,19 @@ androidWins.text = scoreForAndroid;
 androidWins.style = {fill: "0X131615", fontSize: 22};
 androidWins.position.set(app.screen.width - totalCountForAndroid.width - 5, 20 + totalCountForAndroid.height);
 stage.addChild(androidWins);
+
+function checkPriority(player, android) {
+    if ( player == 'skissors' && android == 'paper' ||  
+         player == 'stone' && android == 'skissors' ||
+         player == 'paper' && android == 'stone' ) {
+            playerWins.message += 1;
+            return;
+        } 
+    androidWins += 1;
+}
+
+function randomMoveOfAndroid() {
+    return arrOfMove[Math.floor(Math.random() * 3)];
+}
 
 document.body.appendChild(app.view);
